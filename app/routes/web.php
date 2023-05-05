@@ -18,11 +18,11 @@ $router->get('/', function () use ($router) {
 });
 
 $router->group(['prefix' => '/api/'], function () use ($router) {
-    $router->post('user/register', 'UserController@register');
-    $router->post('user/sign-in', 'UserController@signIn');
+    $router->post('user/register', 'API\AuthController@register');
+    $router->post('user/sign-in', 'API\AuthController@signIn');
 
     $router->group(['middleware' => 'auth'], function() use ($router) {
-        $router->get('user/companies', 'UserController@getCompanies');
-        $router->post('user/companies', 'UserController@createCompany');
+        $router->get('user/companies', 'API\CompanyController@getCompanies');
+        $router->post('user/companies', 'API\CompanyController@createCompany');
     });
 });

@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
-use App\Models\User;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\DTO\UserDTO;
-use App\DTO\CompanyDTO;
 use App\Services\UserServiceInterface;
+use App\DTO\UserDTO;
 use Illuminate\Support\Facades\Auth;
 
-class UserController extends Controller
+class AuthController extends Controller
 {
     public function register(Request $request, UserServiceInterface $userService)
     {
@@ -63,35 +62,5 @@ class UserController extends Controller
             'user' => auth()->user(),
             'expires_in' => auth()->factory()->getTTL() * 60 * 24
         ]);
-    }
-
-    public function getCompanies(Request $request, User $user)
-    {
-        $companies = $user->companies;
-
-        return response()->json($companies);
-    }
-
-    public function createCompany(Request $request, User $user, UserServiceInterface $userService)
-    {
-        $this->validate($request, [
-            'title' => 'required|unique:companies|max:255',
-            'phone' => 'required|max:255',
-            'description' => 'required'
-        ]);
-
-        $companyDTO = new CompanyDTO(
-            $request->input('title'),
-            $request->input('phone'),
-            $request->input('description')
-        );
-
-        $company = $userService->createCompany($user, $companyDTO);
-
-        if (!$company) {
-            return response()->json([], 500);
-        }
-
-        return response()->json($company, 201);
     }
 }

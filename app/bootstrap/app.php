@@ -49,7 +49,7 @@ $app->singleton(
 );
 
 $app->bind(App\Services\UserServiceInterface::class, App\Services\UserService::class);
-$app->when(App\Http\Controllers\UserController::class)
+$app->when(App\Http\Controllers\API\CompanyController::class)
     ->needs(App\Models\User::class)
     ->give(function () {
         return auth()->user();
