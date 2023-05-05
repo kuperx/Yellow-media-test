@@ -38,7 +38,8 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      */
     public function companies(): HasMany
     {
-        return $this->hasMany(Company::class);
+        return $this->hasMany(Company::class)
+            ->orderBy('id');
     }
 
     /**

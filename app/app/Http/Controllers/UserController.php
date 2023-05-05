@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\DTO\UserDTO;
 use App\Services\UserServiceInterface;
@@ -57,5 +58,12 @@ class UserController extends Controller
             'user' => auth()->user(),
             'expires_in' => auth()->factory()->getTTL() * 60 * 24
         ]);
+    }
+
+    public function getCompanies(Request $request, User $user)
+    {
+        $companies = $user->companies;
+
+        return response()->json($companies);
     }
 }
