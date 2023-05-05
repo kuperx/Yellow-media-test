@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\DTO\UserDTO;
 use App\Services\UserServiceInterface;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -29,5 +30,32 @@ class UserController extends Controller
         $user = $userService->create($userDTO);
 
         return response()->json($user);
+    }
+
+    public function signIn(Request $request)
+    {
+        $this->validate($request, [
+            'email' => 'required',
+            'password' => 'required',
+        ]);
+
+        $credentials = $request->only('email', 'password');
+
+        if (!$token = Auth::attempt($credentials)) {
+            return response()->json(['status' => 'error'], 401);
+        }
+
+        return $this->respondWithToken($token);
+    }
+
+    protected function respondWithToken($token)
+    {
+        return response()->json([
+            'status' => 'success',
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'user' => auth()->user(),
+            'expires_in' => auth()->factory()->getTTL() * 60 * 24
+        ]);
     }
 }

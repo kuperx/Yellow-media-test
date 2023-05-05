@@ -17,7 +17,14 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->post('/api/user/register', [
-    'as' => 'register',
-    'uses' => 'UserController@register'
-]);
+$router->group(['prefix' => '/api/'], function () use ($router) {
+    $router->post('user/register', [
+        'as' => 'register',
+        'uses' => 'UserController@register'
+    ]);
+
+    $router->post('user/sign-in', [
+        'as' => 'signIn',
+        'uses' => 'UserController@signIn'
+    ]);
+});
