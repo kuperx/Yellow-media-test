@@ -23,5 +23,6 @@ $router->group(['prefix' => '/api/'], function () use ($router) {
 
     $router->group(['middleware' => 'auth'], function() use ($router) {
         $router->get('user/companies', 'UserController@getCompanies');
+        $router->post('user/companies', 'UserController@createCompany');
     });
 });
