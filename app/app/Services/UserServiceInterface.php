@@ -14,4 +14,6 @@ interface UserServiceInterface
     public function create(UserDTO $userDTO): ?User;
 
     public function createCompany(User $user, CompanyDTO $company): ?Company;
+
+    public function updatePassword(User $user, string $password): ?User;
 }

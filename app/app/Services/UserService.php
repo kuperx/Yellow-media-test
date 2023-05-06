@@ -19,14 +19,7 @@ class UserService implements UserServiceInterface
     {
         $this->user->fill($userDTO->toArray());
 
-        // encrypt password
-        $this->user->password = Hash::make($userDTO->password);
-
-        if (!$this->user->save()) {
-            return null;
-        }
-
-        return $this->user;
+        return $this->updatePassword($this->user, $userDTO->password);
     }
 
     public function createCompany(User $user, CompanyDTO $company): ?Company
@@ -38,5 +31,16 @@ class UserService implements UserServiceInterface
         }
 
         return $this->company;
+    }
+
+    public function updatePassword(User $user, string $password): ?User
+    {
+        $user->password = Hash::make($password);
+
+        if (!$user->save()) {
+            return null;
+        }
+
+        return $user;
     }
 }
