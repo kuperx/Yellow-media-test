@@ -23,7 +23,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
     $router->post('/user/recover-password', 'API\AuthController@passwordRecoverGenerateToken');
     $router->patch('/user/recover-password', [
-        'as' => 'password.reset', 'uses' => 'API\AuthController@passwordRecover'
+        'as' => 'password.reset',
+        'uses' => 'API\AuthController@passwordRecover'
     ]);
 
     $router->group(['middleware' => 'auth'], function() use ($router) {

@@ -35,7 +35,7 @@ class AuthController extends Controller
         $user = $userService->create($userDTO);
 
         if (!$user) {
-            return response()->json([], 500);
+            return response()->json(['message' => 'Unexpected error, user not created'], 500);
         }
 
         return response()->json($user, 201);
@@ -51,7 +51,7 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (!$token = Auth::attempt($credentials)) {
-            return response()->json(['status' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
 
         return $this->respondWithToken($token);
@@ -60,7 +60,6 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
         return response()->json([
-            'status' => 'success',
             'access_token' => $token,
             'token_type' => 'bearer',
             'user' => auth()->user(),
@@ -80,16 +79,16 @@ class AuthController extends Controller
         });
 
         if ($response == Password::INVALID_USER) {
-            return response()->json(['status' => 'error'], 404);
+            return response()->json(['message' => 'User with this email not found'], 404);
         }
 
         if ($response == Password::RESET_THROTTLED) {
-            return response()->json(['status' => 'error'], 429);
+            return response()->json(['message' => 'Too many requests, try later'], 429);
         }
 
         return $response == Password::RESET_LINK_SENT
-            ? response()->json(['status' => 'success'])
-            : response()->json(['status' => 'error'], 400);
+            ? response()->json(['message' => 'Token sent'])
+            : response()->json(['message' => 'Unexpected error, token was not sent'], 500);
     }
 
     public function passwordRecover(Request $request, UserServiceInterface $userService)
@@ -102,20 +101,20 @@ class AuthController extends Controller
 
         $response = Password::reset($request->only('email', 'password', 'token'),
             function ($user, $password) use ($userService) {
-                $userService->updatePassword($user, $password);
+                $userService->setPassword($user, $password);
             }
         );
 
         if ($response == Password::INVALID_USER) {
-            return response()->json(['status' => 'error'], 404);
+            return response()->json(['message' => 'User with this email not found'], 404);
         }
 
         if ($response == Password::INVALID_TOKEN) {
-            return response()->json(['status' => 'error'], 401);
+            return response()->json(['message' => 'Invalid token'], 401);
         }
 
         return $response == Password::PASSWORD_RESET
-            ? response()->json(['status' => 'success'])
-            : response()->json(['status' => 'error'], 400);
+            ? response()->json(['message' => 'Password updated'])
+            : response()->json(['message' => 'Unexpected error, password not updated'], 500);
     }
 }

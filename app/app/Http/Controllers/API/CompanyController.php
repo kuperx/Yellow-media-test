@@ -34,7 +34,7 @@ class CompanyController extends Controller
         $company = $userService->createCompany($user, $companyDTO);
 
         if (!$company) {
-            return response()->json([], 500);
+            return response()->json(['message' => 'Unexpected error, company not created'], 500);
         }
 
         return response()->json($company, 201);
