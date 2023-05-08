@@ -72,8 +72,10 @@ class AuthController extends Controller
             'email' => 'required'
         ]);
 
+        $email = $request->only('email');
+
         try {
-            $response = Password::sendResetLink($request->only('email'));
+            $response = Password::sendResetLink($email);
         } catch (\Exception $e) {
             // email settings are incorrect
             $response = 0;
@@ -95,11 +97,11 @@ class AuthController extends Controller
             'password' => self::PASSWORD_VALIDATION_RULE,
         ]);
 
-        $response = Password::reset($request->only('email', 'password', 'token'),
-            function ($user, $password) use ($userService) {
-                $userService->setPassword($user, $password);
-            }
-        );
+        $data = $request->only('email', 'password', 'token');
+
+        $response = Password::reset($data, function ($user, $password) use ($userService) {
+            $userService->setPassword($user, $password);
+        });
 
         return match ($response) {
             Password::INVALID_USER => response()->json(['message' => 'User with this email not found'], 404),

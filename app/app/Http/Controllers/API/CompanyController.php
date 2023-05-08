@@ -5,7 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Services\UserServiceInterface;
+use App\Services\CompanyServiceInterface;
 use App\DTO\CompanyDTO;
 
 class CompanyController extends Controller
@@ -17,7 +17,7 @@ class CompanyController extends Controller
         return response()->json($companies);
     }
 
-    public function createCompany(Request $request, User $user, UserServiceInterface $userService)
+    public function createCompany(Request $request, User $user, CompanyServiceInterface $companyService)
     {
         $this->validate($request, [
             'title' => 'required|unique:companies|max:255',
@@ -31,7 +31,7 @@ class CompanyController extends Controller
             $request->input('description')
         );
 
-        $company = $userService->createCompany($user, $companyDTO);
+        $company = $companyService->create($user, $companyDTO);
 
         if (!$company) {
             return response()->json(['message' => 'Unexpected error, company not created'], 500);

@@ -49,6 +49,7 @@ $app->singleton(
 );
 
 $app->bind(App\Services\UserServiceInterface::class, App\Services\UserService::class);
+$app->bind(App\Services\CompanyServiceInterface::class, App\Services\CompanyService::class);
 $app->when(App\Http\Controllers\API\CompanyController::class)
     ->needs(App\Models\User::class)
     ->give(function () {

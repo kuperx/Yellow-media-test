@@ -3,16 +3,13 @@
 namespace App\Services;
 
 use App\DTO\UserDTO;
-use App\DTO\CompanyDTO;
 use App\Models\User;
-use App\Models\Company;
 use Illuminate\Support\Facades\Hash;
 
 class UserService implements UserServiceInterface
 {
     public function __construct(
-        private User $user,
-        private Company $company
+        private User $user
     ) {}
 
     public function create(UserDTO $userDTO): ?User
@@ -31,16 +28,5 @@ class UserService implements UserServiceInterface
         }
 
         return $user;
-    }
-
-    public function createCompany(User $user, CompanyDTO $company): ?Company
-    {
-        $this->company->fill($company->toArray());
-
-        if (!$user->companies()->save($this->company)) {
-            return null;
-        }
-
-        return $this->company;
     }
 }
