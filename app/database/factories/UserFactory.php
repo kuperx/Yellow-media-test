@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
+use App\DTO\UserDTO;
 
 class UserFactory extends Factory
 {
@@ -14,6 +15,34 @@ class UserFactory extends Factory
      * @var string
      */
     protected $model = User::class;
+
+    public function __construct(
+        private User $user
+    ) {}
+
+    public function createUser(): User
+    {
+        return $this->user->newInstance();
+    }
+
+    public function createUserWithAttributes(array $attributes): User
+    {
+        return $this->createUser()->fill($attributes);
+    }
+
+    public function createUserByDTO(UserDTO $userDTO): User
+    {
+        $user = $this->createUserWithAttributes([
+            'first_name' => $userDTO->getFirstName(),
+            'last_name'  => $userDTO->getLastName(),
+            'email'      => $userDTO->getEmail(),
+            'phone'      => $userDTO->getPhone()
+        ]);
+
+        $user->setPassword($userDTO->getPassword());
+
+        return $user;
+    }
 
     /**
      * Define the model's default state.

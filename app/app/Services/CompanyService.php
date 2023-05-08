@@ -5,21 +5,22 @@ namespace App\Services;
 use App\Models\Company;
 use App\Models\User;
 use App\DTO\CompanyDTO;
+use Database\Factories\CompanyFactory;
 
 class CompanyService implements CompanyServiceInterface
 {
     public function __construct(
-        private Company $company
+        private CompanyFactory $companyFactory
     ) {}
 
-    public function create(User $user, CompanyDTO $company): ?Company
+    public function create(User $user, CompanyDTO $companyDTO): ?Company
     {
-        $this->company->fill($company->toArray());
+        $company = $this->companyFactory->createCompanyByDTO($companyDTO);
 
-        if (!$user->companies()->save($this->company)) {
+        if (!$user->setCompany($company)) {
             return null;
         }
 
-        return $this->company;
+        return $company;
     }
 }

@@ -12,14 +12,28 @@ class UserDTO
         public $password
     ) {}
 
-    public function toArray(): array
+    public function getFirstName()
     {
-        return [
-            'first_name' => $this->firstName,
-            'last_name'  => $this->lastName,
-            'email'      => $this->email,
-            'phone'      => $this->phone,
-            'password'   => $this->password
-        ];
+        return $this->firstName;
+    }
+
+    public function getLastName()
+    {
+        return $this->lastName;
+    }
+
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    public function getPhone()
+    {
+        return $this->phone;
+    }
+
+    public function getPassword()
+    {
+        return $this->password;
     }
 }

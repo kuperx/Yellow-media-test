@@ -10,12 +10,18 @@ class CompanyDTO
         public $description
     ) {}
 
-    public function toArray(): array
+    public function getTitle()
     {
-        return [
-            'title'       => $this->title,
-            'phone'       => $this->phone,
-            'description' => $this->description
-        ];
+        return $this->title;
+    }
+
+    public function getPhone()
+    {
+        return $this->phone;
+    }
+
+    public function getDescription()
+    {
+        return $this->description;
     }
 }

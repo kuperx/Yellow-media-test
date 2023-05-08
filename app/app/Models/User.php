@@ -9,10 +9,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use Illuminate\Support\Facades\Hash;
 
 class User extends Model implements AuthenticatableContract, AuthorizableContract, JWTSubject, CanResetPasswordContract
 {
@@ -36,6 +38,13 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'password', 'remember_token'
     ];
 
+    public function setPassword(string $password): User
+    {
+        $this->password = Hash::make($password);
+
+        return $this;
+    }
+
     /**
      * Get the user's companies.
      */
@@ -43,6 +52,16 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     {
         return $this->hasMany(Company::class)
             ->orderBy('id');
+    }
+
+    public function getCompanies(): Collection
+    {
+        return $this->companies;
+    }
+
+    public function setCompany(Company $company): Company
+    {
+        return $this->companies()->save($company);
     }
 
     /**
