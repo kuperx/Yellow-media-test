@@ -8,7 +8,6 @@ use App\Services\UserServiceInterface;
 use App\DTO\UserDTO;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -73,22 +72,19 @@ class AuthController extends Controller
             'email' => 'required'
         ]);
 
-        $response = Password::sendResetLink($request->only('email'), function ($user, $token) {
-            // @todo make notification by email
-            echo $token;
-        });
-
-        if ($response == Password::INVALID_USER) {
-            return response()->json(['message' => 'User with this email not found'], 404);
+        try {
+            $response = Password::sendResetLink($request->only('email'));
+        } catch (\Exception $e) {
+            // email settings are incorrect
+            $response = 0;
         }
 
-        if ($response == Password::RESET_THROTTLED) {
-            return response()->json(['message' => 'Too many requests, try later'], 429);
-        }
-
-        return $response == Password::RESET_LINK_SENT
-            ? response()->json(['message' => 'Token sent'])
-            : response()->json(['message' => 'Unexpected error, token was not sent'], 500);
+        return match ($response) {
+            Password::INVALID_USER => response()->json(['message' => 'User with this email not found'], 404),
+            Password::RESET_THROTTLED => response()->json(['message' => 'Too many requests, try later'], 429),
+            Password::RESET_LINK_SENT => response()->json(['message' => 'Token sent']),
+            default => response()->json(['message' => 'Unexpected error, token was not sent'], 500)
+        };
     }
 
     public function passwordRecover(Request $request, UserServiceInterface $userService)
@@ -105,16 +101,11 @@ class AuthController extends Controller
             }
         );
 
-        if ($response == Password::INVALID_USER) {
-            return response()->json(['message' => 'User with this email not found'], 404);
-        }
-
-        if ($response == Password::INVALID_TOKEN) {
-            return response()->json(['message' => 'Invalid token'], 401);
-        }
-
-        return $response == Password::PASSWORD_RESET
-            ? response()->json(['message' => 'Password updated'])
-            : response()->json(['message' => 'Unexpected error, password not updated'], 500);
+        return match ($response) {
+            Password::INVALID_USER => response()->json(['message' => 'User with this email not found'], 404),
+            Password::INVALID_TOKEN => response()->json(['message' => 'Invalid token'], 401),
+            Password::PASSWORD_RESET => response()->json(['message' => 'Password updated']),
+            default => response()->json(['message' => 'Unexpected error, password not updated'], 500)
+        };
     }
 }
